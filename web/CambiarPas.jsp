@@ -1,9 +1,6 @@
-<%@page import="com.emergentes.modelo.Posts"%>
-<%@page import="com.emergentes.modelo.Usuarios"%>
-<%@page import="com.emergentes.dao.UsuarioDAO"%>
-<%@page import="com.emergentes.dao.UsuarioDAOimpl"%>
-<%@page import="com.emergentes.dao.PostsDAO"%>
-<%@page import="com.emergentes.dao.PostsDAOimpl"%>
+<%@page import="com.emergentes.modelo.*"%>
+<%@page import="com.emergentes.dao.*"%>
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,15 +11,17 @@
 
     HttpSession ses = request.getSession();
     String usuario = "";
-    int id_usuario = 0;
+    String id = "";
+    int id_cat_usuario = 0;
 
-    if (ses.getAttribute("usuario") != null && ses != null && ses.getAttribute("id_usuario") != null) {
+    if (ses.getAttribute("usuario") != null && ses != null && ses.getAttribute("id") != null) {
         usuario = ses.getAttribute("usuario").toString();
-        id_usuario = Integer.parseInt(ses.getAttribute("id_usuario").toString());
+        id = ses.getAttribute("id").toString();
+        id_cat_usuario = Integer.parseInt(ses.getAttribute("id_cat_usuario").toString());
 
         /*
-    if(id_usuario!=1){
-        response.sendRedirect("ControladorPosts");
+    if(!usuario.equals("admin")){
+        response.sendRedirect("login.jsp");
     } 
          */
     } else {
@@ -32,20 +31,20 @@
 
 %>
 
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/style.css" type="text/css" media="screen"/>
         <title>JSP Page</title>
         <script>
             function validarPas() {
-            var valor1 = document.getElementById("pas1").value;
-            var valor2 = document.getElementById("pas2").value;
-                
-                if (valor1==valor2) {
+                var valor1 = document.getElementById("pas1").value;
+                var valor2 = document.getElementById("pas2").value;
+
+                if (valor1 == valor2) {
                     //Si son iguales
                     alert("Las contraseñas son iguales \n Se Actualizo la contraseñas");
-                } else if (valor1!=valor2) {
+                } else if (valor1 != valor2) {
                     //Si no son iguales
                     alert("Las contraseñas no son iguales \n No se Actualizo la contraseñas");
                 }
@@ -54,39 +53,39 @@
         </script>
     </head>
     <body>
-        <p align="right"><a href="ControladorPosts">INICIO</a> 
-            <c:if test="${sessionScope.id_usuario == 1}">| 
-                <a href="ControladorUsuario">Usuarios</a> </c:if> | 
-                <a href="CambiarPas.jsp">Cambiar Password</a> | 
-                <a href="ControladorPosts?action=view_misposts">Mis Posts</a> |
-                &nbsp&nbsp<img src="Imagenes/usuario.png" width="30" height="30"> Usuario: <%= usuario%> |
-            &nbsp&nbsp<img src="Imagenes/salir.png" width="30" height="30"><a href="login.jsp?cerrar=true"> Salir</a>
-        </p>
-        <hr>
-        <h1>
+        <jsp:include page="WEB-INF/menu.jsp" />
+        <h1>    
             Cambiar Password  
         </h1>
-        <form name="CambiarPas" action="ControladorUsuario" method="post" onsubmit="validarPas();">
-            <input type="hidden" name="id" value="-1">
-            <table width="311">       
-                <tr>
-                    <td>Nuevo Password</td>
-                    <td ><input id="pas1" name="pas1" type="password" required></td>                   
-                </tr>
+        <form name="CambiarPas" action="CambiarPasControlador" method="post" onsubmit="validarPas();">
+            <input type="hidden" name="id" value="${sessionScope.id}">
+            <div class="datagrid">
+                <table width="311">       
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Campo</th>
+                        </tr>
+                    </thead>
+                    <tr class="alt">
+                        <td>Nuevo Password</td>
+                        <td ><input id="pas1" name="pas1" type="password" required></td>                   
+                    </tr>
 
-                <tr>
-                    <td>Repita Passwors</td>
+                    <tr>
+                        <td>Repita Passwors</td>
 
-                    <td ><input id="pas2" name="pas2" type="password" required></td>  
+                        <td ><input id="pas2" name="pas2" type="password" required></td>  
 
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><input type="submit" value="enviar" ></td>
-                </tr>
+                    </tr>
+                    <tr class="alt">
+                        <td></td>
+                        <td><input type="submit" value="enviar" class="btn" ></td>
+                    </tr>
 
-            </table>
+                </table>
+            </div>
         </form>
-        <p><a href="ControladorPosts">Volver</a></p>
+        <p><a href="ControladorAviso" class="btn">Volver</a></p>
     </body>
 </html>

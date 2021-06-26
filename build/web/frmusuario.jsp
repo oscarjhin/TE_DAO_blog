@@ -1,79 +1,131 @@
-<%@page import="com.emergentes.modelo.Posts"%>
-<%@page import="com.emergentes.modelo.Usuarios"%>
-<%@page import="com.emergentes.dao.UsuarioDAO"%>
-<%@page import="com.emergentes.dao.UsuarioDAOimpl"%>
-<%@page import="com.emergentes.dao.PostsDAO"%>
-<%@page import="com.emergentes.dao.PostsDAOimpl"%>
+<%@page import="com.emergentes.modelo.*"%>
+<%@page import="com.emergentes.dao.*"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 
-<% 
+<%
 
-HttpSession ses = request.getSession();
-String usuario="";
-int id_usuario=0;
+    HttpSession ses = request.getSession();
+    String usuario = "";
+    String id = "";
+    int id_cat_usuario = 0;
 
-if(ses.getAttribute("usuario")!=null && ses !=null && ses.getAttribute("id_usuario")!=null){
-    usuario = ses.getAttribute("usuario").toString();
-    id_usuario = Integer.parseInt(ses.getAttribute("id_usuario").toString()); 
-    
-    
-    if(id_usuario!=1){
-        response.sendRedirect("ControladorPosts");
+    if (ses.getAttribute("usuario") != null && ses != null && ses.getAttribute("id") != null) {
+        usuario = ses.getAttribute("usuario").toString();
+        id = ses.getAttribute("id").toString();
+        id_cat_usuario = Integer.parseInt(ses.getAttribute("id_cat_usuario").toString());
+
+        /*
+    if(!usuario.equals("admin")){
+        response.sendRedirect("login.jsp");
     } 
-    
-}else{
-    response.sendRedirect("login.jsp");
-}
+         */
+    } else {
+        response.sendRedirect("login.jsp");
+    }
 
 
 %>
 
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/style.css" type="text/css" media="screen"/>
         <title>JSP Page</title>
     </head>
+
+    <script>
+        function texto()
+        {
+            var texto = document.getElementById("ci").value;
+            document.getElementById("usuario").value = "usu_" + texto;
+            document.getElementById("contrasena").value = texto + "_aviso";
+
+        }
+    </script>
     <body>
-        <p align="right"><a href="ControladorPosts">INICIO</a> 
-            <c:if test="${sessionScope.id_usuario == 1}">| 
-                <a href="ControladorUsuario">Usuarios</a> </c:if> | 
-                <a href="CambiarPas.jsp">Cambiar Password</a> | 
-                <a href="ControladorPosts?action=view_misposts">Mis Posts</a> |
-                &nbsp&nbsp<img src="Imagenes/usuario.png" width="30" height="30"> Usuario: <%= usuario%> |
-            &nbsp&nbsp<img src="Imagenes/salir.png" width="30" height="30"><a href="login.jsp?cerrar=true"> Salir</a>
-        </p>
-        <hr>
+        <jsp:include page="WEB-INF/menu.jsp" />
+
         <h1>
-            <c:if test="${aviso.id == 0}">Nuevo </c:if>
-            <c:if test="${aviso.id > 0}">Editar </c:if>
-            Usuario    
-        </h1>
-        <form action="ControladorUsuario" method="post">
-            <input type="hidden" name="id" value="${aviso.id}">
-            <table width="311">       
-                <tr>
-                    <td>Usuario</td>
-                    <td ><input name="usuario" type="text" value="${aviso.usuario}" required></td>                   
-                </tr>
 
-                <tr>
-                    <td>Password</td>
+            <c:if test="${objeto.ci == ''}">Nuevo </c:if>
+            <c:if test="${objeto.ci != ''}">Editar </c:if>
+                Usuario    
+            </h1>
 
-                    <td ><input name="password" type="password" value="${aviso.password}" required></td>  
- 
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><input type="submit" value="enviar"></td>
-                </tr>
+            <form action="ControladorUsuario" method="post">
+                <input type="hidden" name="ci_ant" value="${objeto.ci}">
+            <div class="datagrid">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Campo</th>
+                        </tr>
+                    </thead>
+                    <tr class="alt">
+                        <td>CI</td>
+                        <td ><input id="ci" name="ci" type="text" value="${objeto.ci}" required onchange="texto()"></td>                   
+                    </tr>                
 
-            </table>
+                    <tr>
+                        <td>Apellidos</td>
+                        <td ><input name="apellidos" type="text" value="${objeto.apellidos}" required></td>                   
+                    </tr>
+
+                    <tr class="alt">
+                        <td>Nombre</td>
+                        <td ><input name="nombres" type="text" value="${objeto.nombres}" required></td>                   
+                    </tr> 
+
+                    <tr>
+                        <td>Email</td>
+                        <td ><input name="email" type="email" value="${objeto.email}" required></td>                   
+                    </tr> 
+
+                    <tr class="alt">
+                        <td>Usuario</td>
+                        <td ><input id="usuario" name="usuario" type="text" value="${objeto.usuario}" required readonly="readonly"></td>                   
+                    </tr>
+
+                    <tr>
+                        <td>Contrasena</td>
+
+                        <td ><input id="contrasena" name="contrasena" type="text" value="${objeto.contrasena}" required></td>  
+
+                    </tr>
+
+                    <tr class="alt">
+
+                        <td>Cat Usuario</td>
+                        <td class="alt">
+                            <select name="id_cat_usuario" class="btn">
+                                <c:forEach var="item" items="${catus}"> 
+                                    <option value= ${item.id}    
+                                            <c:if test="${objeto.id_cat_usuario == item.id}">
+                                                selected
+                                            </c:if>
+                                            >${item.descripcion}</option>
+                                </c:forEach>
+                            </select>        
+
+
+                        </td> 
+
+
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="enviar" class="btn"></td>
+                    </tr>
+
+                </table>
+            </div>
         </form>
-        <p><a href="ControladorUsuario">Volver</a></p>
+        <p><a href="ControladorUsuario" class="btn">Volver</a></p>
     </body>
 </html>

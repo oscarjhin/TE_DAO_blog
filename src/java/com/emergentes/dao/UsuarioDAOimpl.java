@@ -2,7 +2,7 @@
 package com.emergentes.dao;
 
 import com.emergentes.ConexionDB;
-import com.emergentes.modelo.Usuarios;
+import com.emergentes.modelo.Usuario;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -12,148 +12,197 @@ import java.util.List;
 public class UsuarioDAOimpl extends ConexionDB implements UsuarioDAO{
 
     @Override
-    public List<Usuarios> verifica_usuario2(String us, String pas) throws Exception {
-        List<Usuarios> lista= null;
+    public List<Usuario> verifica_usuario2(String us, String pas) throws Exception {
+        List<Usuario> lista = null;
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("SELECT * FROM usuarios where usuario=? and password=?");
+            PreparedStatement ps = this.conn.prepareStatement("SELECT * FROM usuario where usuario=? and contrasena=?");
             ps.setString(1, us);
             ps.setString(2, pas);
-            
+
             ResultSet rs = ps.executeQuery();
-            
-            
-            lista = new ArrayList<Usuarios>();
+
+            lista = new ArrayList<Usuario>();
             while (rs.next()) {
-                Usuarios usu=new Usuarios();
-                usu.setId(rs.getInt("id"));
+                Usuario usu = new Usuario();
+                usu.setCi(rs.getString("ci"));
+                usu.setApellidos(rs.getString("apellidos"));
+                usu.setNombres(rs.getString("nombres"));
+                usu.setEmail(rs.getString("email"));
                 usu.setUsuario(rs.getString("usuario"));
-                usu.setPassword(rs.getString("password"));
+                usu.setContrasena(rs.getString("contrasena"));
+                usu.setId_cat_usuario(rs.getInt("id_cat_usuario"));
+
                 lista.add(usu);
             }
             rs.close();
             ps.close();
-            
+
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
-        } 
-        
+        }
+
         return lista;
     }
 
     @Override
-    public Usuarios getById(int id) throws Exception {
-        Usuarios usu= new Usuarios();
+    public Usuario getById(String id) throws Exception {
+        Usuario usu = new Usuario();
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("SELECT * FROM usuarios where id=?");
-            ps.setInt(1, id);
+            PreparedStatement ps = this.conn.prepareStatement("SELECT * FROM usuario where ci=? ORDER By apellidos, nombres");
+            ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
-                usu.setId(rs.getInt("id"));
+                usu.setCi(rs.getString("ci"));
+                usu.setApellidos(rs.getString("apellidos"));
+                usu.setNombres(rs.getString("nombres"));
+                usu.setEmail(rs.getString("email"));
                 usu.setUsuario(rs.getString("usuario"));
-                usu.setPassword(rs.getString("password"));
+                usu.setContrasena(rs.getString("contrasena"));
+                usu.setId_cat_usuario(rs.getInt("id_cat_usuario"));
             }
-            
+
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
-        } 
-        
+        }
+
         return usu;
     }
 
     @Override
-    public List<Usuarios> getAll() throws Exception {
-        List<Usuarios> lista= null;
+    public List<Usuario> getAll() throws Exception {
+        List<Usuario> lista = null;
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("SELECT * FROM usuarios");
+            PreparedStatement ps = this.conn.prepareStatement("SELECT * FROM usuario ORDER By apellidos, nombres");
             ResultSet rs = ps.executeQuery();
-            
-            
-            lista = new ArrayList<Usuarios>();
+
+            lista = new ArrayList<Usuario>();
             while (rs.next()) {
-                Usuarios usu=new Usuarios();
-                usu.setId(rs.getInt("id"));
+                Usuario usu = new Usuario();
+                
+                usu.setCi(rs.getString("ci"));
+                usu.setApellidos(rs.getString("apellidos"));
+                usu.setNombres(rs.getString("nombres"));
+                usu.setEmail(rs.getString("email"));
                 usu.setUsuario(rs.getString("usuario"));
-                usu.setPassword(rs.getString("password"));
+                usu.setContrasena(rs.getString("contrasena"));
+                usu.setId_cat_usuario(rs.getInt("id_cat_usuario"));
                 lista.add(usu);
             }
             rs.close();
             ps.close();
-            
+
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
-        } 
-        
+        }
+
         return lista;
     }
 
     @Override
-    public void insert(Usuarios objeto) throws Exception {
+    public void insert(Usuario objeto) throws Exception {
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("insert into usuarios (usuario, password) values (?,?);");
-            ps.setString(1, objeto.getUsuario());
-            ps.setString(2, objeto.getPassword());
+            PreparedStatement ps = this.conn.prepareStatement("INSERT INTO usuario(ci, apellidos, nombres, email, usuario, contrasena, id_cat_usuario) VALUES (?,?,?,?,?,?,?)");
+            ps.setString(1, objeto.getCi());
+            ps.setString(2, objeto.getApellidos());
+            ps.setString(3, objeto.getNombres());
+            ps.setString(4, objeto.getEmail());
+            ps.setString(5, objeto.getUsuario());
+            ps.setString(6, objeto.getContrasena());
+            ps.setInt(7, objeto.getId_cat_usuario());
             ps.executeUpdate();
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
         }
     }
 
     @Override
-    public void update(Usuarios objeto) throws Exception {
+    public void update(Usuario objeto) throws Exception {
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("UPDATE usuarios SET usuario=?, password=? WHERE id=?");
-            ps.setString(1, objeto.getUsuario());
-            ps.setString(2, objeto.getPassword());
-            ps.setInt(3, objeto.getId());
+            PreparedStatement ps = this.conn.prepareStatement("UPDATE usuario SET ci=?, apellidos=?,nombres=?,email=?,usuario=?,contrasena=?,id_cat_usuario=? WHERE ci=?");
+           
+            ps.setString(1, objeto.getCi());
+            ps.setString(2, objeto.getApellidos());
+            ps.setString(3, objeto.getNombres());
+            ps.setString(4, objeto.getEmail());
+            ps.setString(5, objeto.getUsuario());
+            ps.setString(6, objeto.getContrasena());
+            ps.setInt(7, objeto.getId_cat_usuario());
+            ps.setString(8, objeto.getCi_ant());
+            
             ps.executeUpdate();
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
         }
     }
 
     @Override
-    public void delete(int id) throws Exception {
+    public void delete(String id) throws Exception {
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("delete from usuarios where id = ?");
-            ps.setInt(1, id);
+            PreparedStatement ps = this.conn.prepareStatement("delete from usuario where ci = ?");
+            ps.setString(1, id);
             ps.executeUpdate();
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
         }
     }
 
     @Override
-    public void update_pas(int id, String pas) throws Exception {
+    public void update_pas(String id, String pas) throws Exception {
         try {
             this.conectar();
-            PreparedStatement ps=this.conn.prepareStatement("UPDATE usuarios SET password=? WHERE id=?");;
+            PreparedStatement ps = this.conn.prepareStatement("UPDATE usuario SET contrasena=? WHERE ci=?");;
             ps.setString(1, pas);
-            ps.setInt(2, id);
+            ps.setString(2, id);
             ps.executeUpdate();
         } catch (Exception e) {
             throw e;
-        }finally{
+        } finally {
             this.desconectar();
         }
+    }
+
+    @Override
+    public boolean getByIdExist(String id) throws Exception {
+        boolean res=false;
+        Usuario usu = new Usuario();
+        try {
+            this.conectar();
+            PreparedStatement ps = this.conn.prepareStatement("SELECT * FROM usuario where ci=?");
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                res=true;
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.desconectar();
+        }
+
+        return res;
+        
+        
     }
 
    

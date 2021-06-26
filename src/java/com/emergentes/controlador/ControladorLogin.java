@@ -1,7 +1,7 @@
 package com.emergentes.controlador;
 
 import com.emergentes.dao.UsuarioDAOimpl;
-import com.emergentes.modelo.Usuarios;
+import com.emergentes.modelo.Usuario;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -23,15 +23,15 @@ public class ControladorLogin extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
             String usuario = "";
-            String contra = "";
+            String contrasena = "";
             UsuarioDAO dao = new UsuarioDAOimpl();
-            List<Usuarios> datos = new ArrayList<Usuarios>();
+            List<Usuario> datos = new ArrayList<Usuario>();
 
             if (request.getParameter("btnIniciar") != null) {
                 try {
                     usuario = request.getParameter("usuario");
-                    contra = request.getParameter("password");
-                    datos = dao.verifica_usuario2(usuario, contra);
+                    contrasena = request.getParameter("contrasena");
+                    datos = dao.verifica_usuario2(usuario, contrasena);
                     if (datos.size() > 0) {
                         request.setAttribute("datos", datos);
                         request.getRequestDispatcher("login.jsp").forward(request, response);
